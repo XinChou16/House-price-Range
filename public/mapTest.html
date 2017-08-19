@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gLq3uGQogi04coH5QrnGfAg50wrAEvkr"></script>  
+    <title>房价上涨</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+
+<div class="header navbar">
+    <div class="col-md-5">
+        <a class="navbar-brand slogan" href="#">上海房价房价</a>
+        <form class="navbar-form navbar-left" onsubmit="return false">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="输入小区名开始找房">
+            </div>
+            <button type="submit" class="btn btn-default" @click="submit">开始找房</button>
+        </form>
+    </div>
+    <div class="col-md-3 dist">
+        <p href="#" class="dist-title">区域选择</p>
+        <div class="dist-wrap">
+            <select name="" id="districtChoose">
+                <option value="浦东">浦东</option>
+                <option value="闵行">闵行</option>
+                <option value="宝山">宝山</option>
+                <option value="徐汇">徐汇</option>
+                <option value="普陀">普陀</option>
+                <option value="杨浦">杨浦</option>
+                <option value="长宁">长宁</option>
+            </select>
+            <i class="dropdown"></i>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="content">
+    <div class="c-left">
+        <!-- <div class="title">
+            <p class="city">
+                上海市&nbsp; 区域选择
+                <select name="" id="districtChoose">
+                        <option value="浦东">浦东</option>
+                        <option value="闵行">闵行</option>
+                        <option value="宝山">宝山</option>
+                        <option value="徐汇">徐汇</option>
+                        <option value="普陀">普陀</option>
+                        <option value="杨浦">杨浦</option>
+                        <option value="长宁">长宁</option>
+                </select>
+            </p>
+            <div class="district">dede</div>
+        </div> -->
+        <ul class="list-group text-center">
+            <li class="list-group-item">
+                正荣大湖之都<span class="riseRate">200</span>
+            </li>
+            <li class="list-group-item">
+                正荣大湖之都<span class="riseRate">200</span>
+            </li>
+        </ul>
+    </div>
+    <div class="c-right">
+         <div id="allmap"></div> 
+    </div>
+</div>
+
+<!-- <div class="footer">
+    <p class="author nmb">&copy2017&nbsp;|&nbsp;周大侠 <a href="#" class="githubSite">Github</a></p>
+</div> -->
+    <script src="./js/jquery-1.7.1.min.js"></script>
+    <script src="./js/bootstrap-paginator.js"></script>
+    <script src="./js/index.js"></script>
+</body>
+
+</html>

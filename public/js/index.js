@@ -1,145 +1,141 @@
 /**
  *  @xin chou
- * Create on: 2017-07-18
+ * Create on: 2017-08-08
  */
 
- 
+
 $(function () {
-    var query = $('.query'),
-        rank = $('.rank'),
-        show = $('.show'),
-        queryLib = $('.queryLib'),
-        libShow = $('#libShow'),
-        libName = $('.libName'),
-        displayResult = $('.displayResult');
+var allmap = $('.allmap'),
+    rank = $('.rank'),
+    show = $('.show'),
+    queryLib = $('.queryLib'), 
+    libShow = $('#libShow'),
+    libName = $('.libName'),
+    displayResult = $('.displayResult');
+    
+    // 地图全局设置
+    var map = new BMap.Map("allmap");
+    map.centerAndZoom(new BMap.Point(121.48038, 31.23632), 13); // 初始化地图,设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
+    map.setCurrentCity("上海"); // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
 
-    var checkLib = (function(){
+var mapHandler = (function () {
 
-      function _query(){
-        query.click(function(){
-            $.post(
-                '/query',
-                {
-                    rank: rank.val(),
-                },
-                function(data){
-                    // console.log(data);
-                }
-            )
-        });
-        queryLib.click(function(){
-            var inputLibName = libName.val();
-            if (inputLibName.length == 0) {
-                alert('请输入库名~');
-                return;
+    function _mapInit() {
+        map.removeEventListener('tilesloaded');
+        map.addEventListener('tilesloaded', function () {
+            var bs = map.getBounds(); //获取可视区域
+            var bssw = bs.getSouthWest(); //可视区域左下角
+            var bsne = bs.getNorthEast(); //可视区域右上角
+            // alert("当前地图可视范围是：" + bssw.lng + "," + bssw.lat + "到" + bsne.lng + "," + bsne.lat);
+            var options = {
+                leftDownLng: bssw.lng,
+                leftDownLat: bssw.lat,
+                rightTopLng: bsne.lng,
+                rightTopLat: bsne.lat,
             }
-            $.post(
-                '/queryLib',
-                {
-                    libName: inputLibName,
-                },
-                function(data){
-                    if(data.length == 0){
-                        alert('没有查询到名为' + inputLibName + '的库');
-                        libName.val('');
-                        libName.focus();
-                        libShow.html('')
-                        return;
-                    }
-                    var libHtml = '';
-                    for (var i = 0; i < data.length; i++) {
-                        libHtml += '<tr><td>';
-                        libHtml += (i+1) + '</td><td>';
-                        libHtml += data[i].name + '</td><td>';
-                        libHtml += data[i].num + '</td></tr>';
-                    }
-                    libShow.html(libHtml);
-                }
-            )
-        });
-      }
 
-      function _showLibs(){
-            $.get(
-                '/ge',
-                {
-                    rank: rank.val(),
-                },
-                function(data){
-                    console.log('一共返回'+ data.length + '条数据');
-                    // console.log(data)
-                    var libHtml = '';
-                    var end = data.length;
-                    
-                    if (end > 20) {
-                        end = 20;
-                    }
-                    for (var i = 0; i < end; i++) {
-                        libHtml += '<tr><td>';
-                        libHtml += (i+1) + '</td><td>';
-                        libHtml += data[i].name + '</td><td>';
-                        libHtml += data[i].num + '</td></tr>';
-                    }
-                    displayResult.show();
-                    libShow.html(libHtml);// 点击显示按钮，显示前20项数据
-                    _paging(data);
-                }
-            )
-      }
+            // 显示覆盖物
+            var pointArray = [
+                new BMap.Point(121.48038, 31.23632),
+                new BMap.Point(121.48038,31.25632),
+                new BMap.Point(121.48038,31.27632),
+                new BMap.Point(121.48038,31.29632)
+            ];
+            var optsArray = [{}, {}, {},{}];
+            var labelArray = [];
+            var contentArray = [
+                "欢迎使用<br/>百度地图0",
+                "欢迎使用<br/>百度地图1",
+                "欢迎使用<br/>百度地图2",
+                "欢迎使用<br/>百度地图3"
+            ];
+            for (var i = 0; i < pointArray.length; i++) {
+                // 添加圆形覆盖物
+                optsArray[i].position = pointArray[i];
+                labelArray[i] = new BMap.Label(contentArray[i], optsArray[i]);
+                labelArray[i].setStyle({
+                    color: "#f00",
+                    background: "rgba(0, 151, 177, 0.6)",
+                    fontSize: "12px",
+                    height: "100px",
+                    width: "100px",
+                    borderRadius: "50%",
+                    padding: "5px",
+                    border: "1px solid transparent",
+                    lineHeight: "20px",
+                    overflow: "hidden",
+                    textAlign: "center",
+                    fontFamily: "微软雅黑"
+                });
+                map.addOverlay(labelArray[i]);
+                labelArray[i].disableMassClear();//禁止label覆盖物在map.clearOverlays方法中被清除
+                
+                // 覆盖物绑定事件
+                labelArray.forEach(function(label,index){
+                    label.removeEventListener('mouseover');
+                    label.removeEventListener('mouseout');
+                    // 显示行政区边界
+                    var myGeo = new BMap.Geocoder();
+                    label.addEventListener('mouseover',function(){
+                        this.setStyle({
+                            background: "rgba(0, 255, 177, 0.6)",
+                        })
+                        // 先拿到point，获取当前行政区，然后调用方法显示区域边界
+                        myGeo.getLocation(pointArray[index], function (result) {_getBoundary(result)});
+                    })
+                    label.addEventListener('mouseout',function(){
+                        this.setStyle({
+                            background: "rgba(0, 151, 177, 0.6)",
+                        })
+                        map.clearOverlays();
+                    })
+                })
 
-      //翻页器
-      function _paging(libObj) {
-        var ele = $('#page');
-        var pages = Math.ceil(libObj.length/20);
-        console.log('总页数' + pages);
-        ele.bootstrapPaginator({    
-            currentPage: 1,    
-            totalPages: pages,    
-            size:"normal",    
-            bootstrapMajorVersion: 3,    
-            alignment:"left",    
-            numberOfPages:pages,    
-            itemTexts: function (type, page, current) {        
-                switch (type) {            
-                    case "first": return "首页";            
-                    case "prev": return "上一页";            
-                    case "next": return "下一页";            
-                    case "last": return "末页";            
-                    case "page": return page;
-                }
-            },
-            onPageClicked:  function(event, originalEvent, type, page){
-                // console.log('当前选中第：' + page + '页');
-                var pHtml = '';
-                var endPage;
-                var startPage = (page-1) * 20;
-                if (page < pages) {
-                     endPage = page * 20;
-                }else{
-                     endPage = libObj.length;
-                }
-                for (var i = startPage; i < endPage; i++) {
-                    pHtml += '<tr><td>';
-                    pHtml += (i+1) + '</td><td>';
-                    pHtml += libObj[i].name + '</td><td>';
-                    pHtml += libObj[i].num + '</td></tr>';
-                }
-                libShow.html(pHtml);
             }
+
         })
-      }
+    }
 
-        function init() {
-          _query();
-         _showLibs();
+    // getLocation回调函数，显示行政区边界
+    function _getBoundary(result){
+        if (result) {
+            var districtName = result.address.substr(0, 6);
+            // console.log(districtName)
+            var bdary = new BMap.Boundary();
+            bdary.get(districtName, function (rs) { //获取行政区域
+                map.clearOverlays();        //!!清除地图覆盖物，不清除的话，透明度会出现问题       
+                var count = rs.boundaries.length; //行政区域的点有多少个
+
+                if (count === 0) {
+                    alert('未能获取当前输入行政区域');
+                    return;
+                }
+                var pointArray = [];
+                for (var i = 0; i < count; i++) {
+                    var ply = new BMap.Polygon(rs.boundaries[i], {
+                        strokeWeight: 3,
+                        strokeColor: "#3cc",
+                        strokeOpacity: 0.7
+                    }); //建立多边形覆盖物  
+                    map.addOverlay(ply);
+                    pointArray = pointArray.concat(ply.getPath());
+                }
+            });
         }
+    }
 
-        return {
-            init: init
-        }
+    function init() {
+        _mapInit();
+    }
 
-    })();
+    return {
+        init: init
+    }
 
-    checkLib.init();
+})();
+
+mapHandler.init();
 
 })

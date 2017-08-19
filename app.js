@@ -14,7 +14,7 @@ var app = express();
 // 设置模板引擎
 app.engine('.html', ejs.__express);
 app.set('view engine', 'html');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'dist'));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -22,7 +22,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // 设置主页面路由
 app.use('/', index);
@@ -46,18 +46,21 @@ app.use(function(err, req, res, next) {
 });
 
 // 通过mongoose模块，监听http请求，判断数据库是否连接成功
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
-  if (err) {
-    console.log('数据库连接失败')
-  }else{
+// mongoose.Promise = global.Promise;
+// mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
+//   if (err) {
+//     console.log('数据库连接失败')
+//   }else{
+//     console.log('数据库连接成功'); 
+//     app.listen(8000); 
+//     console.log('Running at port: 8000')
+//     // 连接到数据库才开始监听 
+   
+//   }
+// })
+
     console.log('数据库连接成功'); 
     app.listen(8000); 
     console.log('Running at port: 8000')
-    // 连接到数据库才开始监听 
-   
-  }
-})
-
 
 module.exports = app;
