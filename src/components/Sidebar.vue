@@ -1,17 +1,12 @@
 <template>
-  <div class="col-md-2">
-    <ul class="list-group text-center">
-        <li class="list-group-item">
-            正荣大湖之都<span class="riseRate">200</span>
-        </li>
-        <li class="list-group-item">
-            正荣大湖之都<span class="riseRate">200</span>
-        </li>
-        <li class="list-group-item">
-            正荣大湖之都<span class="riseRate">200</span>
+  <div class="col-md-3 sidebar">
+    <ul class="list-group ">
+        <li class="list-group-item" v-for="zone in zoneList">
+            <span class="zoneName">{{zone.name}}</span>
+            <span class="riseRate">{{zone.priceRateHalfY}}</span>
         </li>
     </ul>
-  </div>
+  </div> 
 
 </template>
 
@@ -21,12 +16,13 @@ export default {
   name: 'hello1',
   data () {
     return {
-      msg: 'Welcome to hello1'
+      msg: 'Welcome to hello1',
+      zoneList:[],
     }
   },
   mounted(){
-    messageBus.$on('submitMsg',(data)=>{
-       console.log('data',data);
+    messageBus.$on('transZone',(zoneObj)=>{
+       this.zoneList = zoneObj;
     })
   }
 
@@ -53,9 +49,22 @@ a {
   color: #42b983;
 }
 .list-group{
-  outline: 1px solid red;
+  // outline: 1px solid red;
+}
+.sidebar{
+  height:600px;
+  overflow:scroll;
+  margin-top: -15px;
+  padding-left:0;
+  padding-right:0;
+}
+.list-group-item{
+  width:100%;
+}
+.zoneName{
+  float:left;
 }
 .riseRate{
-  margin-left: 10px;
+  margin-left: 80px;
 }
 </style>

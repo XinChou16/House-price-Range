@@ -46,21 +46,21 @@ app.use(function(err, req, res, next) {
 });
 
 // 通过mongoose模块，监听http请求，判断数据库是否连接成功
-// mongoose.Promise = global.Promise;
-// mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
-//   if (err) {
-//     console.log('数据库连接失败')
-//   }else{
-//     console.log('数据库连接成功'); 
-//     app.listen(8000); 
-//     console.log('Running at port: 8000')
-//     // 连接到数据库才开始监听 
-   
-//   }
-// })
-
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
+  if (err) {
+    console.log('数据库连接失败')
+  }else{
     console.log('数据库连接成功'); 
     app.listen(8000); 
     console.log('Running at port: 8000')
+    // 连接到数据库才开始监听 
+   
+  }
+})
+
+    // console.log('数据库连接成功'); 
+    // app.listen(8000); 
+    // console.log('Running at port: 8000')
 
 module.exports = app;

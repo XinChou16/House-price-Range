@@ -1,6 +1,6 @@
 <template>
-  <div class="col-md-10">
-    <div id="allmap"></div> 
+  <div class="col-md-9 map">
+    <div id="allmap" ></div> 
   </div>
 </template>
 
@@ -9,7 +9,7 @@ import BMap from 'BMap'
 export default {
   name: 'hello2',
   data () {
-    return {
+    return { 
       msg: 'hello2',
       map: null,
     }
@@ -30,6 +30,7 @@ export default {
 
     // 传递消息
     addMapLabel() {
+      const self = this;
       // 显示覆盖物
       var pointArray = [
           new BMap.Point(121.48038, 31.23632),
@@ -68,27 +69,26 @@ export default {
         labelArray[i].disableMassClear();//禁止label覆盖物在map.clearOverlays方法中被清除
         
         // 覆盖物绑定事件
-        // labelArray.forEach((label,index)=>{
-        //   label.removeEventListener('mouseover');
-        //   label.removeEventListener('mouseout');
-        //   // 显示行政区边界
-        //   const myGeo = new BMap.Geocoder();
-        //   label.addEventListener('mouseover',function ()  {
-        //     this.setStyle({
-        //         background: "rgba(0, 255, 177, 0.6)",
-        //     })
-        //     // 先拿到point，获取当前行政区，然后调用方法显示区域边界
-        //     myGeo.getLocation(pointArray[index],  (result) => {self.getBoundary(result)});
-        //   // console.log('getboundar')
-        //   })
-        //   label.addEventListener('mouseout',function()  {
-        //     this.setStyle({
-        //         background: "rgba(0, 151, 177, 0.6)",
-        //     })
-        //     self.map.clearOverlays();
-        //   })
-        // })
-
+        labelArray.forEach((label,index)=>{
+          label.removeEventListener('mouseover');
+          label.removeEventListener('mouseout');
+          // 显示行政区边界
+          const myGeo = new BMap.Geocoder();
+          label.addEventListener('mouseover',function ()  {
+            this.setStyle({
+                background: "rgba(0, 255, 177, 0.6)",
+            })
+            // 先拿到point，获取当前行政区，然后调用方法显示区域边界
+            myGeo.getLocation(pointArray[index],  (result) => {self.getBoundary(result)});
+          // console.log('getboundar')
+          })
+          label.addEventListener('mouseout',function()  {
+            this.setStyle({
+                background: "rgba(0, 151, 177, 0.6)",
+            })
+            self.map.clearOverlays();
+          })
+        })
       }
     },
 
@@ -121,7 +121,7 @@ export default {
     // 显示边界
     getBoundary(result) {
       if (result) {
-        const districtName = result.address.substr(0, 6);
+        const districtName = result.address.substr(0, 6);// 行政区名
         // console.log(districtName)
         const bdary = new BMap.Boundary();
         bdary.get(districtName,  (rs) => { //获取行政区域
@@ -174,7 +174,10 @@ a {
   outline: 1px solid #3cc;
   width: 100%;
   height: 600px;
-  margin-left:15px;
-  margin-right:15px;
+}
+.map{
+  padding-left:0;
+  padding-right:0;
+  margin-top: -15px;
 }
 </style>
