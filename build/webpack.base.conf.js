@@ -18,9 +18,9 @@ module.exports = {
       ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
   },
-  externals: {
-    "BMap": "BMap"
- }, 
+//   externals: {
+//     "BMap": "BMap"
+//  }, 
 	// output: {
 	// 	path: path.join(__dirname, "../dist/static/js"),
 	// 	filename: "bundle.js",

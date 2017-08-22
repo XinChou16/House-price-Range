@@ -2,7 +2,7 @@
   
 <div class="header navbar">
     <div class="col-md-5">
-        <a class="navbar-brand slogan" href="#">上海房价房价</a>
+        <a class="navbar-brand slogan" href="#">上海房价</a>
         <form class="navbar-form navbar-left" onsubmit="return false">
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="输入小区名开始找房">

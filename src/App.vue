@@ -2,14 +2,14 @@
   <div id="app">
     <Navbar></Navbar>
     <Sidebar></Sidebar>
-    <Map></Map>
+    <fangMap></fangMap>
   </div>
 </template>
 
 <script>
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import Map from './components/Map'
+import fangMap from './components/fangMap'
 
 
 export default {
@@ -17,7 +17,7 @@ export default {
   components: {
     Navbar,
     Sidebar,
-    Map,
+    fangMap,
   }
 }
 </script>

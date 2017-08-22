@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node build/build.js && babel-node app.js --presets es2015,stage-2",
+    "start": "node build/build.js && babel-node app.js --presets es2015,stage-2",    
     "build": "node build/build.js",
     "debug": "NODE_ENV=development babel-node-debug -p 8081 app.js",
     "watch": "webpack-dev-server --watch --progress --color --config  build/webpack.base.conf.js ",
