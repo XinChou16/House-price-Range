@@ -2,9 +2,12 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var mongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
+
 
 var index = require('./routes/index');
 var ejs = require("ejs");
@@ -21,9 +24,17 @@ app.set('views', path.join(__dirname, 'dist'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
-
+app.use(session({
+  secret: 'imooc',
+  store: new mongoStore({
+    url: 'mongodb://localhost:27017/house-crawl',
+    collection: 'sessions',
+    resave: false,
+    saveUninitialized: true
+  })
+}))
 // 设置主页面路由
 app.use('/', index);
 
@@ -52,15 +63,12 @@ mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
     console.log('数据库连接失败')
   }else{
     console.log('数据库连接成功'); 
-    app.listen(8000); 
-    console.log('Running at port: 8000')
+    app.listen(3000); 
+    console.log('Running at port: 3000')
     // 连接到数据库才开始监听 
    
   }
 })
 
-    // console.log('数据库连接成功'); 
-    // app.listen(8000); 
-    // console.log('Running at port: 8000')
 
 module.exports = app;

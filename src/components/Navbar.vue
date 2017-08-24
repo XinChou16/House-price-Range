@@ -2,7 +2,7 @@
   
 <div class="header navbar">
     <div class="col-md-5">
-        <a class="navbar-brand slogan" href="#">上海房价</a>
+        <a class="navbar-brand slogan" href="#">好多房</a>
         <form class="navbar-form navbar-left" onsubmit="return false">
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="输入小区名开始找房">
@@ -19,6 +19,14 @@
             <i class="dropdown"></i>
         </div>
     </div>
+    
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="javascript:void(0)" @click = "login" v-if="isLogin">登录</a></li>
+        <li><a href="javascript:void(0)" @click = "reg" v-if="isLogin">注册</a></li>
+        <li><a href="javascript:void(0)"                v-if="!isLogin">欢迎~{{user}}</a></li>
+        <li><a href="javascript:void(0)" @click = "logout" v-if="!isLogin">退出</a></li>
+    </ul>
+
 </div>
 </template>
  
@@ -50,12 +58,46 @@ export default {
           {name:'崇明'},
       ],
       selected:'浦东',
+      isLogin: true,
+      user: '',
     }
   },
+
+  mounted() {
+  },
+
   methods:{
     submit:function(){
       console.log('i am navbar');
       messageBus.$emit('submitMsg','I am a message');// 组件通信
+    },
+
+    reg: function() {
+      messageBus.$emit('regInfo',true);
+    },
+
+    login: function() {
+        const self = this;
+        messageBus.$emit('logInfo',true);
+        messageBus.$on('logInfoBack',function(res){
+            const rsb = res.body;
+            //   console.log(res)
+            // 成功登录后返回，视图
+            if(rsb.code){
+                self.user = rsb.user;
+                self.isLogin = false;
+            }
+        });
+    },
+
+    logout: function() {
+      this.$http.get('/logout').then(function(data){
+        //   console.log(data.body.msg)
+          if(data.body.code){
+            // 视图
+            this.isLogin = true;
+          }
+      })
     },
 
     // 点击下拉菜单
@@ -111,7 +153,7 @@ export default {
     .header .dist{
         font-size: 15px;
         padding: 9px;
-        outline: 1px solid red; 
+        /* outline: 1px solid red;  */
     }
     .header .dist select{
         height: 100%;
@@ -154,6 +196,9 @@ export default {
         transform: rotate(-45deg);
         right: -12px; 
         top: 11px;
+    }
+    .header .nav>li>a:hover{
+        background-color: #3dc;
     }
 
 </style>

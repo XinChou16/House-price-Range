@@ -1,7 +1,7 @@
 <template>
   <div class="col-md-3 sidebar">
     <ul class="list-group ">
-        <li class="list-group-item" v-for="zone in zoneList">
+        <li class="list-group-item" v-for="zone in zoneList"> 
             <span class="zoneName">{{zone.name}}</span>
             <span class="riseRate">{{zone.priceRateHalfY}}</span>
         </li>

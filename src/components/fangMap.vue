@@ -220,7 +220,7 @@ a {
   color: #42b983;
 }
 #allmap{
-  outline: 1px solid #3cc;
+  /* outline: 1px solid #3cc;*/
   width: 100%;
   height:100%;
 }

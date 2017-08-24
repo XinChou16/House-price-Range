@@ -3,6 +3,7 @@
     <Navbar></Navbar>
     <Sidebar></Sidebar>
     <fangMap></fangMap>
+    <modal></modal>
   </div>
 </template>
 
@@ -10,6 +11,7 @@
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import fangMap from './components/fangMap'
+import modal from './components/modal'
 
 
 export default {
@@ -18,6 +20,7 @@ export default {
     Navbar,
     Sidebar,
     fangMap,
+    modal,
   }
 }
 </script>
