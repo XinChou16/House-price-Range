@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 var SALT_WORK_FACTOR = 10;
 
@@ -12,7 +12,7 @@ var UserSchema = new Schema({
         unique: true,
     },
     password: String,
-    // role: {
+    // role: { 
     //   type: Number,
     //   default: 0
     // },
@@ -75,4 +75,6 @@ UserSchema.methods = {
     }
   };
   
+
+
 module.exports = UserSchema;

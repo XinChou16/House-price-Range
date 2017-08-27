@@ -34,6 +34,8 @@
 
 <script>
 import messageBus from './messageBus'
+import hash from 'hash.js'
+
 export default {
   name: 'hello1',
   data () {
@@ -51,8 +53,9 @@ export default {
             this.showModal = true;
             this.isLogin = false; // 更改modal标题
        }
+       
     })
-    messageBus.$on('logInfo',(isLog)=>{
+    messageBus.$on('logInfo',(isLog)=>{ 
        if(isLog){
             this.showModal = true;
             this.isLogin = true; // 更改modal标题
@@ -63,9 +66,10 @@ export default {
 
   methods: {
     reg: function() {
+      const pwd = hash.sha256().update(this.pwd).digest('hex');
         this.$http.post('/userSignup',{
             user: this.name,
-            pwd: this.pwd,
+            pwd: pwd,
         }).then(function(res){
             console.log(res.body)
             if(!res.body.code){

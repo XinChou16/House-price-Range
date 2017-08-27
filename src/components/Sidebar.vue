@@ -1,9 +1,13 @@
 <template>
   <div class="col-md-3 sidebar">
     <ul class="list-group ">
-        <li class="list-group-item" v-for="zone in zoneList"> 
+        <li class="list-group-item" v-for="zone in zoneList" v-if="isZone"> 
             <span class="zoneName">{{zone.name}}</span>
             <span class="riseRate">{{zone.priceRateHalfY}}</span>
+        </li>
+        <li class="list-group-item" v-for="dist in zoneList" v-if="!isZone"> 
+            <span class="zoneName">{{dist.district}}</span>
+            <span class="riseRate">{{dist.priceRateHalfM}}</span>
         </li>
     </ul>
   </div> 
@@ -13,17 +17,35 @@
 <script>
 import messageBus from './messageBus'
 export default {
-  name: 'hello1',
+  name: 'hello1', 
   data () {
     return {
       msg: 'Welcome to hello1',
       zoneList:[],
+      isZone: false,
     }
   },
+
   mounted(){
+    const self = this;
+    messageBus.$on('transDist',(distObj)=>{
+       this.zoneList = distObj;
+    })
+
+    // 点击时触发
     messageBus.$on('transZone',(zoneObj)=>{
        this.zoneList = zoneObj;
-    })
+       this.isZone = true;
+    });
+
+
+    messageBus.$on('searchZone',(data)=>{
+      this.$http.post('/searchZone',{name: data}).then(function(res){
+       self.zoneList = res.body;
+       self.isZone = true;
+      })
+    });
+
   }
 
 }
@@ -56,7 +78,7 @@ a {
   overflow:scroll;
   margin-top: -15px;
   padding-left:0;
-  padding-right:0;
+  padding-right:20px;
 }
 .list-group-item{
   width:100%;

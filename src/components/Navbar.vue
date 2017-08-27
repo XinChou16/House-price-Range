@@ -5,9 +5,9 @@
         <a class="navbar-brand slogan" href="#">好多房</a>
         <form class="navbar-form navbar-left" onsubmit="return false">
             <div class="form-group">
-                <input type="text" class="form-control" placeholder="输入小区名开始找房">
+                <input type="text" class="form-control" placeholder="输入小区名开始找房" v-model="zoneFind">
             </div>
-            <button type="submit" class="btn btn-default" @click="submit">开始找房</button>
+            <button type="submit" class="btn btn-default" @click="search">开始找房</button>
         </form>
     </div> 
     <div class="col-md-3 dist">
@@ -60,6 +60,7 @@ export default {
       selected:'浦东',
       isLogin: true,
       user: '',
+      zoneFind:'',
     }
   },
 
@@ -67,9 +68,9 @@ export default {
   },
 
   methods:{
-    submit:function(){
-      console.log('i am navbar');
-      messageBus.$emit('submitMsg','I am a message');// 组件通信
+    search:function(){
+        const data = this.zoneFind
+      messageBus.$emit('searchZone',data);// 组件通信
     },
 
     reg: function() {

@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const request = require('request-promise');
 const router = express.Router();
+const session = require('express-session');
+const sha512 = require('sha512');
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
@@ -18,9 +20,25 @@ router.get('/', function (req, res, next) {
 
 // 用户是否登录测试
 router.get('/get', function (req, res, next) {
-    console.log(req.session.user)
+    var hash = sha512('huahua')
+    console.log(hash.toString('hex'))
+    res.json({
+        user: req.session.user
+        
+    });
+        
+});
 
-    res.json('index');
+// 根据小区名模糊查询
+router.post('/searchZone', function (req, res, next) {
+    const name = req.body.name;
+    Zone.find({'name': {'$regex': name, '$options': 'i'}}).exec(function(err,distDoc){
+       if (distDoc) {
+        res.json(distDoc)
+       }else{
+        res.json(err)
+       }
+    })
 });
 
 // 获取区域信息
@@ -71,7 +89,7 @@ router.post('/getPriceHalfY', async function (req, res, next) {
 router.post('/userSignup',function(req,res,next){
     const _user = req.body.user;
     const _pwd = req.body.pwd;
-
+    console.log(_pwd);
     User.find({name: _user},function(err,usrDoc){
         if(err) {
             console.log(err)

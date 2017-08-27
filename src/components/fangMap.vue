@@ -6,6 +6,8 @@
 
 <script>
 
+
+import messageBus from './messageBus'
 export default {
   name: 'hello2',
   data () {
@@ -46,7 +48,7 @@ export default {
       if (zoom > 10 && zoom < 13) {
         this.$http.post('/getDist',{options}).then(function(req){
           const distObj = req.body;
-
+          messageBus.$emit('transDist',distObj)
           for(let j =0;j<distObj.length; j++){
             const point = new BMap.Point(distObj[j].x,distObj[j].y);
             const opts = {
@@ -216,7 +218,7 @@ li {
   margin: 0 10px;
 }
 
-a {
+a { 
   color: #42b983;
 }
 #allmap{
