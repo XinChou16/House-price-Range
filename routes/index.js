@@ -18,21 +18,21 @@ router.get('/', function (req, res, next) {
     res.render('index');
 });
 
-// 用户是否登录测试
+// 登录测试
 router.get('/get', function (req, res, next) {
-    var hash = sha512('huahua')
-    console.log(hash.toString('hex'))
-    res.json({
-        user: req.session.user
-        
-    });
+    // var hash = sha512('huahua')
+    // console.log(hash.toString('hex'))
+    res.json(req.session.user);
         
 });
 
 // 根据小区名模糊查询
 router.post('/searchZone', function (req, res, next) {
     const name = req.body.name;
-    Zone.find({'name': {'$regex': name, '$options': 'i'}}).exec(function(err,distDoc){
+    Zone.find({'name': {'$regex': name, '$options': 'i'}})
+    .where('priceRateHalfY')
+    .ne(0)
+    .exec(function(err,distDoc){
        if (distDoc) {
         res.json(distDoc)
        }else{
@@ -58,7 +58,9 @@ router.post('/mapGetZone', async function (req, res, next) {
     
     const result = await Zone.find({})
     .where('y').gte(rsb.leftDownLng).lte(rsb.rightTopLng)
-    .where('x').gte(rsb.leftDownLat).lte(rsb.rightTopLat);
+    .where('x').gte(rsb.leftDownLat).lte(rsb.rightTopLat)
+    .where('priceRateHalfY')
+    .ne(0);
 
     res.json(result);
 }) 
@@ -70,6 +72,8 @@ router.post('/getZone', function (req, res, next) {
     District.findOne({'district':rsb.dist}).exec(function(err,distDoc){
         Zone.find({'district': distDoc._id})
         .sort({"priceRateHalfY":-1})
+        .where('priceRateHalfY')
+        .ne(0)
         .exec(function(err,zoneDoc){
             res.json(zoneDoc)
         })
@@ -85,11 +89,16 @@ router.post('/getPriceHalfY', async function (req, res, next) {
     res.json(result);
 }) 
 
+
+/*
+ *登录，注册 
+ */
+
 // 注册
 router.post('/userSignup',function(req,res,next){
     const _user = req.body.user;
     const _pwd = req.body.pwd;
-    console.log(_pwd);
+    
     User.find({name: _user},function(err,usrDoc){
         if(err) {
             console.log(err)
@@ -125,10 +134,14 @@ router.post('/signin', function (req, res, next) {
     const _pwd = rsb.pwd;
      
     User.findOne({name: _user}).exec(function(err,usrDoc){
-        if (usrDoc.length == 0) {
+        if (!usrDoc) {
+            res.json({
+                code: 0,
+                msg: '当前账户未注册，请重新输入'
+            });
             return;
         }else{
-            usrDoc.comparePassword(_pwd,function(err,isMatched){
+            usrDoc.comparePassword(_user,_pwd,function(err,isMatched){
                 if(isMatched){
                     req.session.user = usrDoc;
                     res.json({
@@ -139,7 +152,7 @@ router.post('/signin', function (req, res, next) {
                 }else{
                     res.json({
                         code: 0,
-                        msg: '登录失败'
+                        msg: '密码错误，请重新输入'
                     });
                 }
             })

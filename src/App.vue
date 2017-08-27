@@ -3,7 +3,8 @@
     <Navbar></Navbar>
     <Sidebar></Sidebar>
     <fangMap></fangMap>
-    <modal></modal>
+    <login></login>
+    <reg></reg>
   </div>
 </template>
 
@@ -11,7 +12,8 @@
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import fangMap from './components/fangMap'
-import modal from './components/modal'
+import login from './components/login'
+import reg from './components/reg'
 
 
 export default {
@@ -20,7 +22,8 @@ export default {
     Navbar,
     Sidebar,
     fangMap,
-    modal,
+    login,
+    reg,
   }
 }
 </script>

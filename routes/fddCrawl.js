@@ -54,7 +54,7 @@ async function fangddCrawl(){
     const zoneNum = fetchZoneNum(zoneNumRsp);// 页面小区个数数组
     
     //2. 循环所有小区，获取小区id，链接
-    for (let i = 20; i < zonePages[l]+1; i++) { // i,页面数,zonePages[l]+1,起始值为1
+    for (let i = 1; i < zonePages[l]+1; i++) { // i,页面数,zonePages[l]+1,起始值为1
       const zonePageUrl = distUrl + '_pa' + i;//http://esf.fangdd.com/shanghai/xiaoqu_s988_pa2/
       const zonePageRsp = await request(zonePageUrl);
       await sleep(500);

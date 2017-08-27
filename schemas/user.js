@@ -2,9 +2,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
-var bcrypt = require('bcrypt-nodejs');
+var md5 = require('md5');
 
-var SALT_WORK_FACTOR = 10;
+// var RANDOM_NUMBER = parseInt(Math.random()*1000000+1000000);
+var RANDOM_NUMBER = 100000;
 
 var UserSchema = new Schema({
     name: {
@@ -41,26 +42,26 @@ UserSchema.pre('save', function (next) {
     } else {
       this.meta.updatedAt = Date.now();
     }
-    // 加盐方法hash
-    bcrypt.genSalt(SALT_WORK_FACTOR,function(err,salt){
-        if(err) return next(err);
+    //  加密 => md5(username+md5(pwd)+sault)
+    var classified = user.name + md5(user.password) + RANDOM_NUMBER;
+    user.password = md5(classified);
     
-        bcrypt.hash(user.password,salt,function(err,hash) {
-            if(err) return next(err);
-            user.password = hash;
-            next();
-        })
-    })
+    next()
   });
   
 // 实例方法
 UserSchema.methods = {
-  comparePassword: function (pwd,cb){
-    bcrypt.compare(pwd,this.password,function(err,isMatch){
-      if(err) return cb(err);
+  comparePassword: function (name,pwd,cb){
+    var _pwd = md5(name + md5(pwd) + RANDOM_NUMBER);
+    
+    if(_pwd === this.password){
+      var isMatch = true;
+    }else{
+      var isMatch = false;
+    }
 
-      cb(null,isMatch)
-    })
+    cb(null,isMatch);
+    
   }
 }
 

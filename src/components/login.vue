@@ -6,8 +6,7 @@
 
           <div class="login-header">
             <slot name="header">
-              <h3 slot="header" v-if="isLogin" >登录</h3>
-              <h3 slot="header" v-else>注册</h3>
+              <h3 slot="header" >登录</h3>
             </slot>
           </div>
 
@@ -20,9 +19,8 @@
           <div class="login-footer">
             <slot name="footer">
              <input type="password" class="form-control" v-model="pwd" placeholder="密码">
-            <input class="btn btn-default"  @click="login('sumbit')" v-if="isLogin" value="确定登录">
-            <input class="btn btn-default"  @click="reg" v-if="!isLogin" value="确定注册">
-            <input class="btn btn-default"  @click="login('cancel')" value="取消">
+            <input class="btn btn-default"  @click="login"  value="确定登录">
+            <input class="btn btn-default"  @click="cancel" value="取消">
             </slot>
           </div>
         </div>
@@ -34,7 +32,7 @@
 
 <script>
 import messageBus from './messageBus'
-import hash from 'hash.js'
+import md5 from 'md5'
 
 export default {
   name: 'hello1',
@@ -43,63 +41,43 @@ export default {
       showModal: false,
       name:'',
       pwd: '',
-      isLogin: true,
     }
   },
 
   mounted(){
-    messageBus.$on('regInfo',(isReg)=>{
-       if(isReg){
-            this.showModal = true;
-            this.isLogin = false; // 更改modal标题
-       }
-       
-    })
     messageBus.$on('logInfo',(isLog)=>{ 
        if(isLog){
             this.showModal = true;
-            this.isLogin = true; // 更改modal标题
        }
     })
     
   },
 
   methods: {
-    reg: function() {
-      const pwd = hash.sha256().update(this.pwd).digest('hex');
-        this.$http.post('/userSignup',{
+    login: function() {
+        const pwd = md5(this.pwd);
+        
+        this.$http.post('/signin',{
             user: this.name,
             pwd: pwd,
-        }).then(function(res){
-            console.log(res.body)
-            if(!res.body.code){
-              alert(res.body.msg);
-              return;
+        }).then(function(rsp){
+            messageBus.$emit('logInfoBack',rsp);
+            if(rsp.body.code){
+                this.showModal = false;
+                this.name = '';
+                this.pwd = '';
+            }else{
+                this.showModal = true;
             }
-            this.name = '';
-            this.pwd = '';
-            this.showModal = false;
         })
     },
 
-    login: function(condition) {
-        if(condition === 'sumbit'){
-            this.$http.post('/signin',{
-                user: this.name,
-                pwd: this.pwd,
-            }).then(function(rsp){
-                messageBus.$emit('logInfoBack',rsp);
-            })
-        this.name = '';
-        this.pwd = '';
+    cancel: function () {
         this.showModal = false;
-        }else if(condition === 'cancel'){
-            console.log('cancel');
-            this.showModal = false;
-        }
     }
-  }
 
+
+  }
 }
 </script>
 

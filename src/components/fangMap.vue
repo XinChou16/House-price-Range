@@ -1,6 +1,6 @@
 <template>
   <div class="col-md-9 map">
-    <div ref="allmap" id="allmap"></div> 
+    <div ref="allmap" class="allmap"></div> 
   </div>
 </template>
 
@@ -21,7 +21,6 @@ export default {
     global.initialize = function (){
       self.initMap();
       self.getZone();
-      self.initListenMsg();
     }
     if(global.BMap !== "undefined"){
       const mapScript = document.createElement("script"); 
@@ -32,7 +31,7 @@ export default {
   },
   methods: {
     initMap() {
-      this.map = new BMap.Map("allmap");
+      this.map = new BMap.Map(this.$refs.allmap);
       this.map.centerAndZoom(new BMap.Point(121.48038, 31.23632), 12); 
       this.map.addControl(new BMap.MapTypeControl()); 
       this.map.setCurrentCity("上海");
@@ -48,7 +47,9 @@ export default {
       if (zoom > 10 && zoom < 13) {
         this.$http.post('/getDist',{options}).then(function(req){
           const distObj = req.body;
+
           messageBus.$emit('transDist',distObj)
+
           for(let j =0;j<distObj.length; j++){
             const point = new BMap.Point(distObj[j].x,distObj[j].y);
             const opts = {
@@ -56,7 +57,7 @@ export default {
               offset   : new BMap.Size(10, -10)    //设置文本偏移量
             }
             // 添加覆盖物
-            const label = new BMap.Label(distObj[j].district + "<br/>"+distObj[j].priceRateHalfM,opts);
+            const label = new BMap.Label(distObj[j].district + "<br/>"+distObj[j].priceRateHalfM.toFixed(0),opts);
 
             label.setStyle({
               boxSizing:"border-box",
@@ -74,7 +75,7 @@ export default {
               overflow: "hidden",
               textAlign: "center",
               fontFamily: "微软雅黑"
-            });
+            }); 
             this.map.addOverlay(label);
             label.disableMassClear();//禁止label覆盖物在map.clearOverlays方法中被清除
 
@@ -111,7 +112,7 @@ export default {
               offset   : new BMap.Size(15, -15)   
             }
             // 添加覆盖物
-            const label = new BMap.Label(zoneObj[k].name + "<br/>"+zoneObj[k].priceRateHalfY,opts);
+            const label = new BMap.Label(zoneObj[k].name + "<br/>"+zoneObj[k].priceRateHalfY.toFixed(0),opts);
 
             label.setStyle({
               boxSizing:"border-box",
@@ -192,11 +193,6 @@ export default {
       }
     },
 
-    // 监听消息
-    initListenMsg() {
-        console.log('监听消息正在运行...')
-    },
-
 
   }
 }
@@ -221,7 +217,7 @@ li {
 a { 
   color: #42b983;
 }
-#allmap{
+.allmap{
   /* outline: 1px solid #3cc;*/
   width: 100%;
   height:100%;

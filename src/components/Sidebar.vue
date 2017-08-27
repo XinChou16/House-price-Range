@@ -29,20 +29,39 @@ export default {
   mounted(){
     const self = this;
     messageBus.$on('transDist',(distObj)=>{
-       this.zoneList = distObj;
+      this.zoneList.length = 0;
+      for (let j = 0; j < distObj.length; j++) {
+        this.zoneList.push({
+         district: distObj[j].district,
+         priceRateHalfM: distObj[j].priceRateHalfM.toFixed(0)
+        })
+      }
+      
     })
 
     // 点击时触发
     messageBus.$on('transZone',(zoneObj)=>{
-       this.zoneList = zoneObj;
+      this.zoneList.length = 0;
+      for (let k = 0; k < zoneObj.length; k++) {
+        this.zoneList.push({
+         name: zoneObj[k].name,
+         priceRateHalfY: zoneObj[k].priceRateHalfY.toFixed(0)
+        })
+      }
        this.isZone = true;
     });
 
 
     messageBus.$on('searchZone',(data)=>{
       this.$http.post('/searchZone',{name: data}).then(function(res){
-       self.zoneList = res.body;
-       self.isZone = true;
+        this.zoneList.length = 0;
+        for (let l = 0; l < res.body.length; l++) {
+          this.zoneList.push({
+            name: res.body[l].name,
+            priceRateHalfY: res.body[l].priceRateHalfY.toFixed(0)
+          })
+        }
+        self.isZone = true;
       })
     });
 

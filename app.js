@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-// var cookieParser = require('cookie-parser');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mongoStore = require('connect-mongo')(session);
@@ -23,23 +23,23 @@ app.set('views', path.join(__dirname, 'dist'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
-// app.use(session({
-//   secret: 'imooc',
-//   store: new mongoStore({
-//     url: 'mongodb://localhost:27017/house-crawl',
-//     collection: 'sessions',
-//     resave: false,
-//     saveUninitialized: true
-//   })
-// }))
 app.use(session({
-  cookieName: 'session',
-  secret: '!@#$%^&&*^',
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000,
-}));
+  secret: 'fang',
+  store: new mongoStore({
+    url: 'mongodb://localhost:27017/house-crawl',
+    collection: 'sessions',
+    resave: false,
+    saveUninitialized: true
+  })
+}))
+// app.use(session({
+//   cookieName: 'session',
+//   secret: '!@#$%^&&*^',
+//   duration: 30 * 60 * 1000,
+//   activeDuration: 5 * 60 * 1000,
+// }));
 // 设置主页面路由
 app.use('/', index);
 

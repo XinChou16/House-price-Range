@@ -65,6 +65,12 @@ export default {
   },
 
   mounted() {
+      this.$http.get('/get').then(function(req){
+          if(req.body){
+              this.user = req.body.name;
+              this.isLogin = false;
+          }
+      })
   },
 
   methods:{
@@ -82,11 +88,15 @@ export default {
         messageBus.$emit('logInfo',true);
         messageBus.$on('logInfoBack',function(res){
             const rsb = res.body;
-            //   console.log(res)
+            
             // 成功登录后返回，视图
             if(rsb.code){
+                alert(rsb.msg);
                 self.user = rsb.user;
                 self.isLogin = false;
+            }else{
+                alert(rsb.msg);
+                return;
             }
         });
     },
@@ -97,6 +107,7 @@ export default {
           if(data.body.code){
             // 视图
             this.isLogin = true;
+            alert(data.body.msg);
           }
       })
     },
