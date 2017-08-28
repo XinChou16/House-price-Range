@@ -29,6 +29,7 @@ export default {
   mounted(){
     const self = this;
     messageBus.$on('transDist',(distObj)=>{
+      
       this.zoneList.length = 0;
       for (let j = 0; j < distObj.length; j++) {
         this.zoneList.push({
@@ -36,6 +37,7 @@ export default {
          priceRateHalfM: distObj[j].priceRateHalfM.toFixed(0)
         })
       }
+       this.isZone = false;
       
     })
 
@@ -50,6 +52,20 @@ export default {
       }
        this.isZone = true;
     });
+
+    // 地图滚动时触发
+    messageBus.$on('transMapZone',(zoneObj) =>{
+      this.zoneList.length = 0;
+      // const temp = [];
+      // [].push.apply(temp,data);
+      for (let k = 0; k < zoneObj.length; k++) {
+        this.zoneList.push({
+         name: zoneObj[k].name,
+         priceRateHalfY: zoneObj[k].priceRateHalfY.toFixed(0)
+        })
+      }
+       this.isZone = true;
+    })
 
 
     messageBus.$on('searchZone',(data)=>{

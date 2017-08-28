@@ -75,6 +75,12 @@ router.post('/getZone', function (req, res, next) {
         .where('priceRateHalfY')
         .ne(0)
         .exec(function(err,zoneDoc){
+            // ZonePrice.findOne({'zone':zoneDoc._id,"time" : "2017年2月"}).exec(function(err,zonePri){
+            //     res.json({
+            //         zoneDoc: zoneDoc,
+            //         priFb: zonePri.price
+            //     })
+            // })
             res.json(zoneDoc)
         })
     })

@@ -46,6 +46,7 @@ export default {
       // console.log('当前放大级别'+zoom)
       if (zoom > 10 && zoom < 13) {
         this.$http.post('/getDist',{options}).then(function(req){
+          this.map.clearOverlays();
           const distObj = req.body;
 
           messageBus.$emit('transDist',distObj)
@@ -58,7 +59,7 @@ export default {
             }
             // 添加覆盖物
             const label = new BMap.Label(distObj[j].district + "<br/>"+distObj[j].priceRateHalfM.toFixed(0),opts);
-
+            
             label.setStyle({
               boxSizing:"border-box",
               color: "#fff",
@@ -77,33 +78,37 @@ export default {
               fontFamily: "微软雅黑"
             }); 
             this.map.addOverlay(label);
-            label.disableMassClear();//禁止label覆盖物在map.clearOverlays方法中被清除
+            // label.disableMassClear();//禁止label覆盖物在map.clearOverlays方法中被清除
 
             //显示行政边界
             const myGeo = new BMap.Geocoder();
             label.addEventListener('mouseover',function ()  {
               this.setStyle({
-                  background: "rgba(0, 255, 177)",
+                  background: "rgba(0, 255, 177,0.6)",
               })
               // 先拿到point，获取当前行政区，然后调用方法显示区域边界
-            myGeo.getLocation(point,  (result) => {self.getBoundary(result)});
-            // console.log('getboundar')
-            })
-            label.addEventListener('mouseout',function()  {
-              this.setStyle({
-                  background: "rgba(0, 151, 177)",
-              })
-              self.map.clearOverlays();
+              // myGeo.getLocation(point,  (result) => {self.getBoundary(result)});
             })
 
+            label.addEventListener('mouseout',function()  {
+              this.setStyle({
+                  background: "rgba(0, 151, 177,0.6)",
+              })
+            })
+
+            label.addEventListener('click',()=>{
+              this.map.centerAndZoom(opts.position,15);
+
+            })
 
           }
         })
-      }else if(zoom >15){
+      }else if(zoom >14){
         this.$http.post('/mapGetZone',{options}).then(function(req){
           this.map.clearOverlays();
           const zoneObj = req.body;
-          // console.log(zoneObj) 上千个
+
+          messageBus.$emit('transMapZone',zoneObj)
 
           for(let k =0;k<zoneObj.length; k++){
             const point = new BMap.Point(zoneObj[k].y,zoneObj[k].x);
@@ -117,7 +122,6 @@ export default {
             label.setStyle({
               boxSizing:"border-box",
               color: "#fff",
-              background: "rgba(0, 151, 177, 0.6)",
               fontSize: "12px",
               height: "80px",
               width:"80px",
@@ -131,6 +135,33 @@ export default {
               textAlign: "center",
               fontFamily: "微软雅黑"
             });
+            const price = zoneObj[k].priceRateHalfY.toFixed(0);
+            if (price < 0) {
+              label.setStyle({
+                background: "rgba(170,186,184,0.7)",
+              });
+            } else if(0 < price && price< 500){
+              label.setStyle({
+                background: "rgba(255,143,143, 0.7)",
+              });
+            }else if(500 < price && price < 1000){
+              label.setStyle({
+                background: "rgba(255,105,105, 0.7)",
+              });
+            }else if(1000 < price && price < 2000){
+              label.setStyle({
+                background: "rgba(255,71,71, 0.7)",
+              });
+            }else if(2000 < price && price < 3000){
+              label.setStyle({
+                background: "rgba(255,41,41, 0.7)",
+              });
+            }else if(3000 < price){
+              label.setStyle({
+                background: "rgba(255,0,0, 0.7)",
+              });
+            }
+
             this.map.addOverlay(label);
             label.addEventListener('click',(e)=>{
               this.$http.post('/getPriceHalfY',{id:zoneObj[k]._id})
@@ -169,8 +200,8 @@ export default {
     getBoundary(result) {
       if (result) {
         const districtName = result.address.substr(0, 6);// 行政区名
-        // console.log(districtName)
         const bdary = new BMap.Boundary();
+
         bdary.get(districtName,  (rs) => { //获取行政区域
           this.map.clearOverlays();        //!!清除地图覆盖物，不清除的话，透明度会出现问题       
           const count = rs.boundaries.length; //行政区域的点有多少个
