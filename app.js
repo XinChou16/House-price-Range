@@ -9,6 +9,9 @@ var mongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 
 var index = require('./routes/index');
+var fddCrawl = require('./routes/fddCrawl');
+var szCrawl = require('./routes/szCrawl');
+var gzCrawl = require('./routes/gzCrawl');
 var ejs = require("ejs");
 
 var app = express();
@@ -42,6 +45,9 @@ app.use(session({
 // }));
 // 设置主页面路由
 app.use('/', index);
+app.use('/fangsh', fddCrawl);
+app.use('/fangsz', szCrawl);
+// app.use('/fanggz', gzCrawl);
 
 // 404页面设置
 app.use(function(req, res, next) {
@@ -63,7 +69,8 @@ app.use(function(err, req, res, next) {
 
 // 通过mongoose模块，监听http请求，判断数据库是否连接成功
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
+// mongoose.connect('mongodb://120.77.204.208:27017/house-crawl',function(err){
+  mongoose.connect('mongodb://localhost:27017/house-crawl',function(err){
   if (err) {
     console.log('数据库连接失败')
   }else{

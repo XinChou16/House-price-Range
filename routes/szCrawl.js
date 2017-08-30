@@ -17,88 +17,86 @@ router.get('/', function (req, res, next) {
 }) 
 
 
+
 // 爬虫路由
 router.get('/crawl', function (req, res, next) {
-  fangddCrawl();
+    
+  szCrawl();
   res.json('success');
 }) 
-async function test(){
-  const url = 'http://esf.fangdd.com/shanghai/xiaoqu_2046.html';
-  const tRsp = await request(url);
-  const $ = cheerio.load(tRsp);
-  const zoneInfoObj = $('script').toArray();
-  console.log(zoneInfoObj[11].children[0].data); 
-}
-/**
- * 区域价格
- * 小区信息
- * 小区价格
- */
 // fangdd 爬虫
-async function fangddCrawl(){
-  const zonePages = [20,20,20,20,20,20,20,20,20,13,20,13,11,20,11,3,16];
-  const fddDistUrl = 'http://esf.fangdd.com/shanghai/xiaoqu' ;
+async function szCrawl(){
+  const zonePages = [20,20,20,6,20,20,20,6,3,2,1];
+  const fddDistUrl = 'http://esf.fangdd.com/shenzhen/xiaoqu' ;
   const fddDistHtml = await request(fddDistUrl);
-  const distLinkArr = getFddDistr(fddDistHtml);// 包含行政区{name,id，url}
-
-  // 爬取17个行政区价格，只爬一次 即可，只获取到16个，闸北数据为空
-  // for (let m = 0; m < 17; m++) {
-  //   const distPriceUrl = 'http://shanghai.fangdd.com/tt/api/chart/housePrice/line/'+distLinkArr[m].id;
+  const distLinkArr = getFddDistr(fddDistHtml);// 包含行政区{name,id，url}\
+  
+  // 爬取10个行政区价格，只爬一次 即可
+   // const options = {
+  //   url: 'http://esf.fangdd.com/map/ajax/searchGarden/section?city_id=1337',
+  //   headers: {
+  //     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
+  //   }
+  // };
+  // const distRsp2 =  await request(options);
+  // const distData = JSON.parse(distRsp2);
+  // for (let m = 0; m < 10; m++) {
+  //   const distPriceUrl = 'http://shenzhen.fangdd.com/tt/api/chart/housePrice/line/'+distLinkArr[m].id;
   //   const distPriceRsp = await request({url:distPriceUrl}).catch(err => console.log(err))
   //   const distPriceObj = JSON.parse(distPriceRsp);
-  //   const distPriceSave = await fetchDistPrice(distPriceObj,distLinkArr[m].name,distLinkArr[m].id);
+  //   const distPriceSave = await fetchDistPrice(distPriceObj,distLinkArr[m].name,distLinkArr[m].id,distData.data[m]);
   //   await sleep(500);
   //   console.log('第'+ (m+1) +'个区完成')
   // }
   console.log(new Date() + '房多多爬虫开始...')
-  // 1.循环17个行政区，获得小区
-  for (let l = 0; l < 1; l++) {  //l,行政区个数,17
+
+  // 1.循环10个行政区，获得小区
+  for (let l = 8; l < 9; l++) {  //l,行政区个数,10
     const distUrl = distLinkArr[l].url;
     const zoneNumRsp = await request(distUrl);
-    await sleep(500);
-    const zoneNum = fetchZoneNum(zoneNumRsp);// 页面小区个数数组
-    
+    await sleep(200);
+    // const zoneNum = fetchZoneNum(zoneNumRsp);// 页面小区个数数组
+
     //2. 循环所有小区，获取小区id，链接
-    for (let i = 1; i < zonePages[l]+1; i++) { // i,页面数,zonePages[l]+1,起始值为1
-      const zonePageUrl = distUrl + '_pa' + i;//http://esf.fangdd.com/shanghai/xiaoqu_s988_pa2/
+    for (let i = 1; i < 2; i++) { // i,页面数,zonePages[l]+1,起始值为1
+      const zonePageUrl = distUrl + '_pa' + i;//http://esf.fangdd.com/shenzhen/xiaoqu_s988_pa2/
       const zonePageRsp = await request(zonePageUrl);
-      await sleep(500);
       const zonePageInfo = fetchZonePageInfo(zonePageRsp);//{name: ,url:}
-      
+
       // 3.循环所有小区，得到小区信息
-      for (let j = 0; j < zoneNum[i-1]; j++) { // zoneNum[i-1] 页面小区数最后一页可能不为15个
+      for (let j = 0; j < 15; j++) { // zoneNum[i-1] 页面小区数最后一页可能不为15个
         const zoneUrl = zonePageInfo[j].url;
         const zoneRsp = await request(zoneUrl);
-        await sleep(200);
+        await sleep(100);
         const zoneInfo = fetchZoneInfo(zoneRsp);// 小区信息
         
         const priceUrl = 'http://esf.fangdd.com/data/cell/price_history_trend?type=4&id='+zoneInfo.zoneId;//491
         const priceRsp = await request({url:priceUrl,});//timeout:100
-        await sleep(200);
+        await sleep(100);
         const priceInfo = fetchPriceInfo(priceRsp);//价格信息 {dealPric,dealCount,listPric}
         
         const dealPriceAvgList = [];// 小区成交均价
         const dealTimeList = [];
         for (let i = 0; i < 6; i++) {
-          const time = '2017年' + priceInfo.dealPric[i].time_str;
-          const num = priceInfo.dealPric[i].number;
+          const time = '2017年' + priceInfo.listPric[i].time_str;
+          const num = priceInfo.listPric[i].number;
           dealPriceAvgList.push(num);
           dealTimeList.push(time);
         }// 成交价半年上涨率
-        const priceRiseAvgHalfY = parseFloat(((dealPriceAvgList[5] - dealPriceAvgList[0])/6).toFixed(2));
-        
+        const priceRiseAvgHalfY = parseFloat(((dealPriceAvgList[5] - dealPriceAvgList[0])/dealPriceAvgList[0]).toFixed(3));
+     
         // 保存小区表
         const districtFind = await District.findOne({'district': zoneInfo.zoneBeloDist});
+    
         const zone = new Zone({
           district: districtFind._id,// 行政区域，如浦东
           name: zoneInfo.zoneName, // 小区名字
           zoneID: zoneInfo.zoneId, // 小区id  
           x: zoneInfo.zoneGeoX, // 百度地图经度
           y: zoneInfo.zoneGeoY, // 百度地图纬度
-          priceRateHalfY: priceRiseAvgHalfY, // 二手房半年上涨率
+          priceRateHalfY: (priceRiseAvgHalfY*100).toFixed(1) + '%', // 二手房半年上涨率
         })
         const zoneSaved = await zone.save();
-        
         // 保存小区价格表
         for (let j = 0; j < 6; j++) {
           const zonePrice = new ZonePrice({
@@ -106,7 +104,7 @@ async function fangddCrawl(){
             time: dealTimeList[j], // 时间
             price: dealPriceAvgList[j], // 价格,成交均价
           })
-          zonePrice.save();
+        //   zonePrice.save();
         }
 
       }
@@ -127,7 +125,7 @@ function getFddDistr(body){
   const distLinkBodyArr = $('.item-parent a').toArray();
   const distLinkArr = [];
   
-  for (let i = 1; i < 18; i++) {
+  for (let i = 1; i < 11; i++) {
     const ele = distLinkBodyArr[i].attribs;
     distLinkArr.push({
       name: distLinkBodyArr[i].children[0].data,// 小区名
@@ -233,7 +231,7 @@ function fetchPriceInfo(data){
 }
 
 // 存储行政区价格
-async function fetchDistPrice(distPriceObj,distName,distId){
+async function fetchDistPrice(distPriceObj,distName,distId,distJson){
   // 获取小区房价，JSON数据中的第二，三个fields
   if(!distPriceObj.data.list) return;
   // 计算上涨率
@@ -242,13 +240,17 @@ async function fetchDistPrice(distPriceObj,distName,distId){
     const ele = distPriceObj.data.list[(i*2)+1].value;
     shandHouseAvgList.push(ele);
   }
-  const priceRiseAvgMon = parseFloat(((shandHouseAvgList[11] - shandHouseAvgList[0])/12).toFixed(2));
-  
+  const priceRiseAvgMon = parseFloat(((shandHouseAvgList[11] - shandHouseAvgList[0])/shandHouseAvgList[0]).toFixed(3));
+
   const district = new District({
-    city: '上海', //城市
+    city: '深圳', //城市
     district: distName, // 区域
     districtId: distId, // 区域id
-    priceRateHalfM: priceRiseAvgMon, // 二手房每月上涨率
+    priceRateHalfM: (priceRiseAvgMon*100).toFixed(1) + '%', // 二手房每月上涨率
+    price: distJson.price,
+    houseCount: distJson.houseCount,
+    y: distJson.maplat, 
+    x: distJson.maplng,
   })
   const distSaved = await district.save();
   // 保存区域价格表
@@ -260,14 +262,27 @@ async function fetchDistPrice(distPriceObj,distName,distId){
     }else{
       var year = '2017年'
     }
-    // const districtPrice = new DistrictPrice({
-    //   district: distSaved._id, // 区域
-    //   time: year + distPriceObj.data.list[m*2].axisX, // 时间
-    //   newHouseprice: newHouseprice, // 新房价格
-    //   secondHandHouseprice: secondHandHouseprice, // 二手房价格
-    // })
-    // const distPriceSaved = await districtPrice.save();
+    const districtPrice = new DistrictPrice({
+      // district: distSaved._id, // 区域
+      time: year + distPriceObj.data.list[m*2].axisX, // 时间
+      newHouseprice: newHouseprice, // 新房价格
+      secondHandHouseprice: secondHandHouseprice, // 二手房价格
+    })
+    const distPriceSaved = await districtPrice.save();
   }
+}
+
+
+// 获取行政区经纬度
+async function getMAp () {
+  const options = {
+    url: 'http://esf.fangdd.com/map/ajax/searchGarden/section?city_id=1337',
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
+    }
+  };
+  const distRsp2 =  await request(options);
+  const data = JSON.parse(distRsp2);
 }
 
 // 计算平均每月上涨价格

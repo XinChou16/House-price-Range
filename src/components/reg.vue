@@ -67,7 +67,6 @@ export default {
             alert(res.body.msg);
             return;
           }
-          alert(res.body.msg);
           this.name = '';
           this.pwd = '';
           this.showModal = false;

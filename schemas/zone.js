@@ -11,7 +11,7 @@ var ZoneSchema = new Schema({
     zoneID: String, // 小区id     
     x: Number, // 百度地图经度   
     y: Number, // 百度地图纬度
-    priceRateHalfY: Number, // 二手房半年上涨率
+    priceRateHalfY: String, // 二手房半年上涨率
     // subwayName: String, // 附近地铁站名称
     // subwayDistance: Number, // 距地铁站距离
     // priceRiseAvgMon: Number, // 房价平均每月上涨

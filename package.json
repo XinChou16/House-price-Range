@@ -7,7 +7,7 @@
     "build": "node build/build.js",
     "debug": "NODE_ENV=development babel-node-debug -p 8081 app.js",
     "watch": "webpack-dev-server --watch --progress --color --config  build/webpack.base.conf.js ",
-    "dev": "babel-node-debug -p 8081 app.js"
+    "dev": "babel-node --debug app.js --presets es2015,stage-2"
   },
   "dependencies": {
     "babel-cli": "^6.24.1",

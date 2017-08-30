@@ -134,12 +134,12 @@ router.post('/userSignup',function(req,res,next){
 })
 
 // 登录
-router.post('/signin', function (req, res, next) {
+router.post('/signin', async function (req, res, next) {
     const rsb = req.body;
     const _user = rsb.user;
     const _pwd = rsb.pwd;
      
-    User.findOne({name: _user}).exec(function(err,usrDoc){
+    await User.findOne({name: _user}).exec(function(err,usrDoc){
         if (!usrDoc) {
             res.json({
                 code: 0,
