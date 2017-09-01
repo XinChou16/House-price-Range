@@ -43,7 +43,7 @@ router.post('/searchZone', function (req, res, next) {
 
 // 获取区域信息
 router.post('/getDist', function (req, res, next) {
-    District.find({}).exec(function(err,distDoc){
+    District.find({"city": "深圳"}).exec(function(err,distDoc){
        if (distDoc) {
         res.json(distDoc)
        }else{
@@ -56,12 +56,12 @@ router.post('/getDist', function (req, res, next) {
 router.post('/mapGetZone', async function (req, res, next) {
     const rsb = req.body.options;
     
-    const result = await Zone.find({})
+    const result = await Zone.find()
     .where('y').gte(rsb.leftDownLng).lte(rsb.rightTopLng)
     .where('x').gte(rsb.leftDownLat).lte(rsb.rightTopLat)
-    .where('priceRateHalfY')
-    .ne(0);
-
+    .ne('0')
+    // .where('priceRateHalfY').or([{'$ne': 'NaN%'},{'$ne': '0.0%'}])
+    
     res.json(result);
 }) 
 

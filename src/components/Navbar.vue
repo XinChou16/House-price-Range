@@ -2,7 +2,7 @@
   
 <div class="header navbar">
     <div class="col-md-5">
-        <a class="navbar-brand slogan" href="#">好多房</a>
+        <a class="navbar-brand slogan" href="#">深圳房价涨幅</a>
         <form class="navbar-form navbar-left" onsubmit="return false">
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="输入小区名开始找房" v-model="zoneFind">
@@ -39,25 +39,20 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       districtName: [
-          {name:'浦东'},
-          {name:'闵行'},
-          {name:'宝山'},
-          {name:'徐汇'},
-          {name:'普陀'},
-          {name:'杨浦'},
-          {name:'长宁'},
-          {name:'松江'},
-          {name:'嘉定'},
-          {name:'黄埔'},
-          {name:'静安'},
-        //   {name:'闸北'}, 
-          {name:'虹口'},
-          {name:'青浦'},
-          {name:'奉贤'},
-          {name:'金山'},
-          {name:'崇明'},
+          {name:'南山'},
+          {name:'罗湖'},
+          {name:'福田'},
+          {name:'盐田'},
+          {name:'龙岗'},
+          {name:'宝安'},
+          {name:'坪山新区'},
+          {name:'龙华新区'},
+          {name:'光明新区'},
+          {name:'大鹏新区'},
+          {name:'南沙'},
+          {name:'从化'},
       ],
-      selected:'浦东',
+      selected:'南山',
       isLogin: true,
       user: '',
       zoneFind:'',

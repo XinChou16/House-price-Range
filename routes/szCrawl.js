@@ -13,17 +13,12 @@ const DistrictPrice = require('../model/districtPrice.js');// 区域价格表
 
 
 router.get('/', function (req, res, next) {
+  
+  szCrawl();
   res.json('首页');
 }) 
 
 
-
-// 爬虫路由
-router.get('/crawl', function (req, res, next) {
-    
-  szCrawl();
-  res.json('success');
-}) 
 // fangdd 爬虫
 async function szCrawl(){
   const zonePages = [20,20,20,6,20,20,20,6,3,2,1];
@@ -53,25 +48,25 @@ async function szCrawl(){
   // 1.循环10个行政区，获得小区
   for (let l = 8; l < 9; l++) {  //l,行政区个数,10
     const distUrl = distLinkArr[l].url;
-    const zoneNumRsp = await request(distUrl);
+    const zoneNumRsp = await request({url:distUrl,timeout:1000});
     await sleep(200);
     // const zoneNum = fetchZoneNum(zoneNumRsp);// 页面小区个数数组
 
     //2. 循环所有小区，获取小区id，链接
-    for (let i = 1; i < 2; i++) { // i,页面数,zonePages[l]+1,起始值为1
+    for (let i = 1; i < zonePages[l]+1; i++) { // i,页面数,zonePages[l]+1,起始值为1
       const zonePageUrl = distUrl + '_pa' + i;//http://esf.fangdd.com/shenzhen/xiaoqu_s988_pa2/
-      const zonePageRsp = await request(zonePageUrl);
+      const zonePageRsp = await request( {url:zonePageUrl,timeout:1000});
       const zonePageInfo = fetchZonePageInfo(zonePageRsp);//{name: ,url:}
 
       // 3.循环所有小区，得到小区信息
       for (let j = 0; j < 15; j++) { // zoneNum[i-1] 页面小区数最后一页可能不为15个
         const zoneUrl = zonePageInfo[j].url;
-        const zoneRsp = await request(zoneUrl);
+        const zoneRsp = await request({url:zoneUrl,timeout:1000} );
         await sleep(100);
         const zoneInfo = fetchZoneInfo(zoneRsp);// 小区信息
         
         const priceUrl = 'http://esf.fangdd.com/data/cell/price_history_trend?type=4&id='+zoneInfo.zoneId;//491
-        const priceRsp = await request({url:priceUrl,});//timeout:100
+        const priceRsp = await request({url:priceUrl,timeout:1000});//timeout:100
         await sleep(100);
         const priceInfo = fetchPriceInfo(priceRsp);//价格信息 {dealPric,dealCount,listPric}
         
@@ -83,8 +78,15 @@ async function szCrawl(){
           dealPriceAvgList.push(num);
           dealTimeList.push(time);
         }// 成交价半年上涨率
-        const priceRiseAvgHalfY = parseFloat(((dealPriceAvgList[5] - dealPriceAvgList[0])/dealPriceAvgList[0]).toFixed(3));
-     
+        let priceRiseAvgHalfY = 0;
+        if (dealPriceAvgList[5] === 0 || dealPriceAvgList[0] === 0) {
+          priceRiseAvgHalfY = 0;
+        } else {
+          priceRiseAvgHalfY = ((dealPriceAvgList[5] - dealPriceAvgList[0])/dealPriceAvgList[0]).toFixed(3);  
+        }
+        // console.log(dealPriceAvgList);
+        console.log(priceRiseAvgHalfY);
+
         // 保存小区表
         const districtFind = await District.findOne({'district': zoneInfo.zoneBeloDist});
     
@@ -94,24 +96,26 @@ async function szCrawl(){
           zoneID: zoneInfo.zoneId, // 小区id  
           x: zoneInfo.zoneGeoX, // 百度地图经度
           y: zoneInfo.zoneGeoY, // 百度地图纬度
-          priceRateHalfY: (priceRiseAvgHalfY*100).toFixed(1) + '%', // 二手房半年上涨率
+          priceRateHalfY: Math.round(parseFloat(priceRiseAvgHalfY*100)), // 二手房半年上涨率
         })
-        const zoneSaved = await zone.save();
+        zone.save();
+        // const zoneSaved = await zone.save();
         // 保存小区价格表
-        for (let j = 0; j < 6; j++) {
-          const zonePrice = new ZonePrice({
-            zone: zoneSaved._id,
-            time: dealTimeList[j], // 时间
-            price: dealPriceAvgList[j], // 价格,成交均价
-          })
+        // for (let j = 0; j < 6; j++) {
+        //   const zonePrice = new ZonePrice({
+        //     zone: zoneSaved._id,
+        //     time: dealTimeList[j], // 时间
+        //     price: dealPriceAvgList[j], // 价格,成交均价
+        //   })
         //   zonePrice.save();
-        }
+        // }
 
       }
-      console.log('正爬取 '+distLinkArr[l].name+' 区..., '+'爬取第'+i+'页数据完成')
+      console.log('正爬取 '+distLinkArr[l].name+' 区... '+'爬取第'+i+'页数据完成')
     }
-    console.log(new Date() + '房多多爬虫结束...')
+    console.log(distLinkArr[l].name+ '区爬虫结束...')
   }
+  console.log('爬虫结束');
 }
 
 /**==========================

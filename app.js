@@ -47,7 +47,7 @@ app.use(session({
 app.use('/', index);
 app.use('/fangsh', fddCrawl);
 app.use('/fangsz', szCrawl);
-// app.use('/fanggz', gzCrawl);
+app.use('/fanggz', gzCrawl);
 
 // 404页面设置
 app.use(function(req, res, next) {

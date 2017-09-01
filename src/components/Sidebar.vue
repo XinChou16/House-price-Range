@@ -1,11 +1,11 @@
 <template>
   <div class="col-md-3 sidebar">
     <ul class="list-group ">
-        <li class="list-group-item" v-for="zone in zoneList" v-if="isZone"> 
+        <li class="list-group-item zoneList" v-for="zone in zoneList" v-if="isZone"> 
             <span class="zoneName">{{zone.name}}</span>
-            <span class="riseRate">{{zone.priceRateHalfY}}</span>
+            <span class="riseRate">{{zone.priceRateHalfY }}</span>
         </li>
-        <li class="list-group-item" v-for="dist in zoneList" v-if="!isZone"> 
+        <li class="list-group-item zoneList" v-for="dist in zoneList" v-if="!isZone"> 
             <span class="zoneName">{{dist.district}}</span>
             <span class="riseRate">{{dist.priceRateHalfM}}</span>
         </li>
@@ -29,12 +29,11 @@ export default {
   mounted(){
     const self = this;
     messageBus.$on('transDist',(distObj)=>{
-      
       this.zoneList.length = 0;
       for (let j = 0; j < distObj.length; j++) {
         this.zoneList.push({
          district: distObj[j].district,
-         priceRateHalfM: distObj[j].priceRateHalfM.toFixed(0)
+         priceRateHalfM: distObj[j].priceRateHalfM
         })
       }
        this.isZone = false;
@@ -47,7 +46,7 @@ export default {
       for (let k = 0; k < zoneObj.length; k++) {
         this.zoneList.push({
          name: zoneObj[k].name,
-         priceRateHalfY: zoneObj[k].priceRateHalfY.toFixed(0)
+         priceRateHalfY: zoneObj[k].priceRateHalfY + '%'
         })
       }
        this.isZone = true;
@@ -61,7 +60,7 @@ export default {
       for (let k = 0; k < zoneObj.length; k++) {
         this.zoneList.push({
          name: zoneObj[k].name,
-         priceRateHalfY: zoneObj[k].priceRateHalfY.toFixed(0)
+         priceRateHalfY: zoneObj[k].priceRateHalfY + '%'
         })
       }
        this.isZone = true;
@@ -74,7 +73,7 @@ export default {
         for (let l = 0; l < res.body.length; l++) {
           this.zoneList.push({
             name: res.body[l].name,
-            priceRateHalfY: res.body[l].priceRateHalfY.toFixed(0)
+            priceRateHalfY: res.body[l].priceRateHalfY
           })
         }
         self.isZone = true;
@@ -108,20 +107,30 @@ a {
 .list-group{
   // outline: 1px solid red;
 }
+
 .sidebar{
-  height:600px;
   overflow:scroll;
+  min-height:600px;
   margin-top: -15px;
   padding-left:0;
   padding-right:20px;
+  position:fixed;
+  left:0;
+  top:66px;
+  bottom:0;
 }
 .list-group-item{
   width:100%;
 }
+.zoneList{
+  text-align: center;
+}
 .zoneName{
   float:left;
+  width: 50%;
 }
 .riseRate{
   margin-left: 80px;
+  width: 50%;
 }
 </style>

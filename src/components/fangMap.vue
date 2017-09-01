@@ -32,9 +32,9 @@ export default {
   methods: {
     initMap() {
       this.map = new BMap.Map(this.$refs.allmap);
-      this.map.centerAndZoom(new BMap.Point(121.48038, 31.23632), 12); 
+      this.map.centerAndZoom(new BMap.Point(114.270313, 22.55994), 11); 
       this.map.addControl(new BMap.MapTypeControl()); 
-      this.map.setCurrentCity("上海");
+      this.map.setCurrentCity("深圳");
       this.map.enableScrollWheelZoom(true);
       const top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
       this.map.addControl(top_left_navigation);     
@@ -58,7 +58,7 @@ export default {
               offset   : new BMap.Size(10, -10)    //设置文本偏移量
             }
             // 添加覆盖物
-            const label = new BMap.Label(distObj[j].district + "<br/>"+distObj[j].priceRateHalfM.toFixed(0),opts);
+            let label = new BMap.Label(distObj[j].district + "<br/>￥"+distObj[j].price+"<br/>" +distObj[j].priceRateHalfM,opts);
             
             label.setStyle({
               boxSizing:"border-box",
@@ -77,6 +77,9 @@ export default {
               textAlign: "center",
               fontFamily: "微软雅黑"
             }); 
+            const price = parseFloat(distObj[j].priceRateHalfM);
+            this.changeColor(price,label)
+
             this.map.addOverlay(label);
             // label.disableMassClear();//禁止label覆盖物在map.clearOverlays方法中被清除
 
@@ -90,10 +93,8 @@ export default {
               // myGeo.getLocation(point,  (result) => {self.getBoundary(result)});
             })
 
-            label.addEventListener('mouseout',function()  {
-              this.setStyle({
-                  background: "rgba(0, 151, 177,0.6)",
-              })
+            label.addEventListener('mouseout',() => {
+              this.changeColor(price,label)
             })
 
             label.addEventListener('click',()=>{
@@ -111,60 +112,36 @@ export default {
           messageBus.$emit('transMapZone',zoneObj)
 
           for(let k =0;k<zoneObj.length; k++){
-            const point = new BMap.Point(zoneObj[k].y,zoneObj[k].x);
-            const opts = {
+            let zone = zoneObj[k];
+            const point = new BMap.Point(zone.y,zone.x);
+            let opts = {
               position : point,    
               offset   : new BMap.Size(15, -15)   
             }
             // 添加覆盖物
-            const label = new BMap.Label(zoneObj[k].name + "<br/>"+zoneObj[k].priceRateHalfY.toFixed(0),opts);
+            let label = new BMap.Label(zone.name + "&nbsp;"+zone.priceRateHalfY+"%",opts);
 
             label.setStyle({
               boxSizing:"border-box",
               color: "#fff",
+              border:"1px solid transparent",
               fontSize: "12px",
-              height: "80px",
-              width:"80px",
-              maxWidth: "80px",
-              borderRadius: "50%",
-              paddingTop:"15px",
-              paddingLeft:"2px",
-              border: "1px solid transparent",
-              lineHeight: "20px",
+              height: "30px",
+              maxWidth:"200px",
+              borderRadius: "16px",
+              lineHeight: "29px",
               overflow: "hidden",
               textAlign: "center",
+              paddingLeft: "5px",
               fontFamily: "微软雅黑"
             });
-            const price = zoneObj[k].priceRateHalfY.toFixed(0);
-            if (price < 0) {
-              label.setStyle({
-                background: "rgba(170,186,184,0.7)",
-              });
-            } else if(0 < price && price< 500){
-              label.setStyle({
-                background: "rgba(255,143,143, 0.7)",
-              });
-            }else if(500 < price && price < 1000){
-              label.setStyle({
-                background: "rgba(255,105,105, 0.7)",
-              });
-            }else if(1000 < price && price < 2000){
-              label.setStyle({
-                background: "rgba(255,71,71, 0.7)",
-              });
-            }else if(2000 < price && price < 3000){
-              label.setStyle({
-                background: "rgba(255,41,41, 0.7)",
-              });
-            }else if(3000 < price){
-              label.setStyle({
-                background: "rgba(255,0,0, 0.7)",
-              });
-            }
+            const price = parseFloat(zone.priceRateHalfY);
+            this.changeColor(price,label)
 
             this.map.addOverlay(label);
+            // 小区覆盖物点击事件
             label.addEventListener('click',(e)=>{
-              this.$http.post('/getPriceHalfY',{id:zoneObj[k]._id})
+              this.$http.post('/getPriceHalfY',{id:zone._id})
               .then(function(priceObj){
                 // console.log(priceObj);
               })
@@ -176,9 +153,43 @@ export default {
 
     },
 
+    // 上涨率颜色区分
+    changeColor(price,label){
+      if (price < 0) {
+        label.setStyle({
+          background: "rgb(170,186,184)",
+        });
+      } else if(0 < price && price< 10){
+        label.setStyle({
+          background: "rgb(255,143,143)",
+        });
+      }else if(10 < price && price < 20){
+        label.setStyle({
+          background: "rgb(255,105,105)",
+        });
+      }else if(20 < price && price < 40){
+        label.setStyle({
+          background: "rgb(255,71,71)",
+        });
+      }else if(40 < price && price < 60){
+        label.setStyle({
+          background: "rgb(255,41,41)",
+        });
+      }else if(60 < price){
+        label.setStyle({
+          background: "rgb(255,0,0)",
+        });
+      }else{
+        label.setStyle({
+          background: "rgb(200,200,200)",
+        });
+      }
+    },
+
     // 添加layer
     getZone() {
       this.map.addEventListener('tilesloaded', () =>  {
+        console.log(this.map.getCenter());
         const zoom = this.map.getZoom();
         const bs = this.map.getBounds(); //获取可视区域
         const bssw = bs.getSouthWest(); //可视区域左下角
@@ -244,12 +255,11 @@ li {
   display: inline-block;
   margin: 0 10px;
 }
-
 a { 
   color: #42b983;
 }
 .allmap{
-  /* outline: 1px solid #3cc;*/
+ /* outline: 1px solid #3cc; */
   width: 100%;
   height:100%;
 }
@@ -257,6 +267,11 @@ a {
   padding-left:0;
   padding-right:0;
   margin-top: -15px;
-  height: 600px;
+  min-height:500px;
+  /* float: right; */
+  position:fixed;
+  right:0;
+  top:66px;
+  bottom:0;
 }
 </style>
