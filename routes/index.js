@@ -59,6 +59,8 @@ router.post('/mapGetZone', async function (req, res, next) {
     const result = await Zone.find()
     .where('y').gte(rsb.leftDownLng).lte(rsb.rightTopLng)
     .where('x').gte(rsb.leftDownLat).lte(rsb.rightTopLat)
+    .sort({"priceRateHalfY":-1})
+    .where('priceRateHalfY')
     .ne('0')
     // .where('priceRateHalfY').or([{'$ne': 'NaN%'},{'$ne': '0.0%'}])
     
@@ -73,7 +75,7 @@ router.post('/getZone', function (req, res, next) {
         Zone.find({'district': distDoc._id})
         .sort({"priceRateHalfY":-1})
         .where('priceRateHalfY')
-        .ne(0)
+        .ne('0')
         .exec(function(err,zoneDoc){
             // ZonePrice.findOne({'zone':zoneDoc._id,"time" : "2017年2月"}).exec(function(err,zonePri){
             //     res.json({

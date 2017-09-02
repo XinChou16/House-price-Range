@@ -157,7 +157,7 @@ export default {
     changeColor(price,label){
       if (price < 0) {
         label.setStyle({
-          background: "rgb(170,186,184)",
+          background: "#379",
         });
       } else if(0 < price && price< 10){
         label.setStyle({
@@ -181,7 +181,7 @@ export default {
         });
       }else{
         label.setStyle({
-          background: "rgb(200,200,200)",
+          background: "#099",
         });
       }
     },
@@ -189,7 +189,7 @@ export default {
     // 添加layer
     getZone() {
       this.map.addEventListener('tilesloaded', () =>  {
-        console.log(this.map.getCenter());
+        // console.log(this.map.getCenter());
         const zoom = this.map.getZoom();
         const bs = this.map.getBounds(); //获取可视区域
         const bssw = bs.getSouthWest(); //可视区域左下角

@@ -2,7 +2,7 @@
   
 <div class="header navbar">
     <div class="col-md-5">
-        <a class="navbar-brand slogan" href="#">深圳房价涨幅</a>
+        <a class="navbar-brand slogan" href="#">大数据找房</a>
         <form class="navbar-form navbar-left" onsubmit="return false">
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="输入小区名开始找房" v-model="zoneFind">
@@ -23,8 +23,8 @@
     <ul class="nav navbar-nav navbar-right">
         <li><a href="javascript:void(0)" @click = "login" v-if="isLogin">登录</a></li>
         <li><a href="javascript:void(0)" @click = "reg" v-if="isLogin">注册</a></li>
-        <li><a href="javascript:void(0)"                v-if="!isLogin">欢迎~{{user}}</a></li>
-        <li><a href="javascript:void(0)" @click = "logout" v-if="!isLogin">退出</a></li>
+        <li><a href="javascript:void(0)"                v-if="isLogin">欢迎~{{user}}</a></li>
+        <li><a href="javascript:void(0)" @click = "logout" v-if="isLogin">退出</a></li>
     </ul>
 
 </div>
@@ -49,11 +49,9 @@ export default {
           {name:'龙华新区'},
           {name:'光明新区'},
           {name:'大鹏新区'},
-          {name:'南沙'},
-          {name:'从化'},
       ],
       selected:'南山',
-      isLogin: true,
+      isLogin: 0,
       user: '',
       zoneFind:'',
     }
