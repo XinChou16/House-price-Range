@@ -1,6 +1,6 @@
 <template>
-  <div class="col-md-9 map">
-    <div ref="allmap" class="allmap"></div> 
+  <div class="col-md-9 col-sm-12 map">
+    <div ref="allmap" class="allmap "></div> 
   </div>
 </template>
 

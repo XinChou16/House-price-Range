@@ -1,24 +1,27 @@
 <template>
-  
-<div class="header navbar">
-    <div class="col-md-5">
-        <a class="navbar-brand slogan" href="#">大数据找房</a>
-        <form class="navbar-form navbar-left" onsubmit="return false">
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="输入小区名开始找房" v-model="zoneFind">
-            </div>
-            <button type="submit" class="btn btn-default" @click="search">开始找房</button>
-        </form>
-    </div> 
-    <div class="col-md-3 dist">
-        <p href="#" class="dist-title">区域选择</p>
-        <div class="dist-wrap">
-            <select name="" id="districtChoose" v-on:change="getDistInfo(selected)" v-model="selected">
-                <option v-for="(dist,index) in districtName" v-bind:value="dist.name">{{ dist.name }}</option>
-            </select>
-            <i class="dropdown"></i>
-        </div>
+  <nav class="navbar navbar-default header">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+      <span class="navbar-brand" href="#">大数据找房</span>
     </div>
+   
+    <form class="navbar-form navbar-left" style="width:40%;" onsubmit="return false">
+        <div class="form-group" style="width: 50%;">
+                <input type="text" class="form-control" placeholder="输入小区名开始找房" v-model="zoneFind">
+        </div>
+        <button type="submit" class="btn btn-default" @click="search">开始找房</button>
+     </form>
+     
+     <div class="dist">
+         <p href="#" class="dist-title">区域选择</p>
+         <div class="dist-wrap">
+             <select name="" id="districtChoose" v-on:change="getDistInfo(selected)" v-model="selected">
+                 <option v-for="(dist,index) in districtName" v-bind:value="dist.name">{{ dist.name }}</option>
+             </select>
+             <i class="dropdown"></i>
+         </div>
+     </div>
     
     <ul class="nav navbar-nav navbar-right">
         <li><a href="javascript:void(0)" @click = "login" v-if="isLogin">登录</a></li>
@@ -26,8 +29,9 @@
         <li><a href="javascript:void(0)"                v-if="isLogin">欢迎~{{user}}</a></li>
         <li><a href="javascript:void(0)" @click = "logout" v-if="isLogin">退出</a></li>
     </ul>
-
-</div>
+   
+  </div>
+</nav>
 </template>
  
 <script>
@@ -204,6 +208,12 @@ export default {
     }
     .header .nav>li>a:hover{
         background-color: #3dc;
+    }
+    .header .navbar-brand span{
+        color:#fff;
+    }
+    .navbar-default .navbar-brand{
+        color:#fff;
     }
 
 </style>

@@ -2,16 +2,16 @@
   "name": "house-price-project",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
+  "scripts": { 
     "start": "node build/build.js && babel-node app.js --presets es2015,stage-2",
-    "build": "node build/build.js",
+    "prod": "babel-node app.js --presets es2015,stage-2",
     "debug": "NODE_ENV=development babel-node-debug -p 8081 app.js",
     "watch": "webpack-dev-server --watch --progress --color --config  build/webpack.base.conf.js ",
     "dev": "babel-node --debug app.js --presets es2015,stage-2"
   },
   "dependencies": {
     "babel-cli": "^6.24.1",
-    "body-parser": "~1.17.1",
+    "body-parser": "~1.17.1", 
     "cheerio": "^1.0.0-rc.2",
     "client-sessions": "^0.8.0",
     "compression": "^1.7.0",

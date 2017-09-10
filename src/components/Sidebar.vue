@@ -1,5 +1,15 @@
 <template>
   <div class="col-md-3 sidebar">
+  <ul>
+    <li class="list-group-item text-center ">
+      <span>数据仅供参考</span>
+      <span>请勿用于商业用途</span>
+    </li>
+    <li class="list-group-item "style=" margin-bottom: -10px;">
+      <span class="zoneName">小区名</span>
+      <span class="riseRate mb">涨幅</span>
+    </li>
+  </ul>
     <ul class="list-group ">
         <li class="list-group-item zoneList" v-for="zone in zoneList" v-if="isZone"> 
             <span class="zoneName">{{zone.name}}</span>
@@ -128,7 +138,7 @@ a {
 .zoneName{
   float:left;
   width: 50%;
-}
+} 
 .riseRate{
   margin-left: 80px;
   width: 50%;
